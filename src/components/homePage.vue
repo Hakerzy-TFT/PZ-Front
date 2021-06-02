@@ -1,13 +1,35 @@
 
 <template>
-  <div onload="init()">
+  <div onload="init()" id="maindiv">
+    <div id="can"><br/>
     <canvas
       @mousedown="startPainting"
       @mouseup="finishedPainting"
       @mousemove="draw"
       id="canvas"
-    >Your browser does not support the HTML5 canvas tag.</canvas>
-    <button @click="erase" id="erase">Clear</button>
+    ></canvas
+    >
+    </div>
+    <div id="option">
+    <input type="radio" id="learning" name="typesi" value="learning"
+         checked>
+  <label for="huey">Learning</label>
+  <br/>
+  <input type="radio" id="testing" name="typesi" value="testing"
+         checked>
+  <label for="huey">Testing</label>
+  <br/>
+    <button @click="erase" class="btn btn-outline-info">Clear</button>
+    <br/>
+    <button @click="send" class="btn btn-outline-info">Send</button>
+    <br/>
+    <button @click="send" class="btn btn-outline-info">Start</button>
+    <br/>
+    <button @click="erase" class="btn btn-outline-info">Stop</button>
+    <br/>
+    <button @click="erase" class="btn btn-outline-info erase">Options</button>
+    <br/>
+  </div>
   </div>
 </template>
 
@@ -39,30 +61,59 @@ export default {
     },
     draw(e) {
       if (!this.painting) return;
+      var pos = this.getMousePos(this.canvas, e);
       this.ctx.lineWidth = 10;
       this.ctx.lineCap = "round";
-      this.ctx.lineTo(e.clientX, e.clientY);
+      this.ctx.lineTo(pos.x, pos.y);
       this.ctx.stroke();
       this.ctx.beginPath();
-      this.ctx.moveTo(e.clientX, e.clientY);
+      this.ctx.moveTo(pos.x, pos.y);
     },
-    erase(){
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
+    getMousePos(canvas, e) {
+      var rect = this.canvas.getBoundingClientRect();
+      var scaleX = canvas.width / rect.width;
+      var scaleY = canvas.height / rect.height;
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY,
+      };
+    },
+    erase() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+    send() {
+      var dataURL = this.canvas.toDataURL();
+      console.log(dataURL);
+    },
   },
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#maindiv{
+  display: flex;
+}
 #canvas {
-  width: 98vw;
-  height: 400px;
+  width: 400px;
+  height: 100px;
   position: relative;
   margin-top: 2px;
   border: 2px solid;
 }
 #eraser {
+  position: relative;
+}
+#can{
+  position: relative;
+  width:70vw;
+}
+#option{
+  left:0;
+  position: relative;
+  width:30vw;
+}
+.btn{
+  width:50%;
+  margin-left:0;
 }
 </style>
